@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    div {
+      margin:  100px auto;
+      width: 200px;
+      height: 200px;
+      border-radius: 50% 50% 50% 0;
+      background-color: coral;
+      /* animation: square-to-circle 2s 1s infinite alternate; */
+      animation: square-to-circle 2s 0.5s 1 alternate;
+    }
+    @keyframes square-to-circle {
+      0% {
+        /* border-radius: 0 0 0 0; 左上 右上 */
+        border-radius: 50% 50% 50% 0;
+        background:coral;
+        transform:rotate(0deg);
+      }
+      25% {
+        /* border-radius: 50% 0 0 0; */
+        border-radius: 50% 50% 50% 0;
+        background:darksalmon;
+        transform:rotate(90deg);
+      }
+      50% {
+        /* border-radius: 50% 50% 0 0; */
+        border-radius: 50% 50% 50% 0;
+        background:indianred;
+        transform:rotate(180deg);
+      }
+      75% {
+        border-radius: 50% 50% 50% 0;
+        background:lightcoral;
+        transform:rotate(135deg);
+      }
+      100% {
+        /* border-radius: 50%; */
+        border-radius: 50% 50% 50% 0;
+        background:darksalmon;
+        transform:rotate(360deg);
+      }
+    }
+
+    body {
+      
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <div class="container"></div> -->
+  <!-- <canvas id="mycanvas" width="300px" height="300px"></canvas> -->
+  <div class="">
+    <ul>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+</body>
+
+<script>
+  const canvas = document.getElementById("mycanvas");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  ctx.fillStyle =  "red";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+</script>
+
+</html>

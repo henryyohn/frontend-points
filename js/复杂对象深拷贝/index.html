@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./deepCopy.js"></script>
+    <title>Document</title>
+</head>
+<body>
+
+    <script>
+        let a = {
+            name: "henry",
+            myAction: function(n) {return 2*n},
+            skills: ["book","read","write"],
+            friends: [
+                {
+                    name: "xiaomi",
+                    age: 100,
+                    props: {
+                        prop1: "xiaomi_p1",
+                        prop2: "xiaomi_p2",
+                    }
+                },
+                {
+                    name: "xiaodou",
+                    age: 101,
+                    props: {
+                        prop1: "xiaodou_p1",
+                        prop2: "xiaodou_p2",
+                    }
+                },
+                {
+                    name: "xiaohuo",
+                    age: 103,
+                    props: {
+                        prop1: "xiaohuo_p1",
+                        prop2: "xiaohuo_p2",
+                    }
+                },
+            ],
+            regExp: /\[1-9]g/,
+            someBoolean: true,
+            someNumber: 200,
+            someundefined: undefined,
+            someNull: null
+        }
+
+        // const b = a;
+        const b = deepCopy(a);
+        b.skills[0] = "kkkkk"
+        b.someNull = {a: 100}
+        // b.regExp = /\8888/
+        console.log("a===", a);
+        console.log("b===", b);
+
+    </script>
+</body>
+</html>

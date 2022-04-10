@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script type="text/javascript" src="./DebounceAndThrottle.js"></script>
+</head>
+
+<body>
+  <div id="bg" style="widows: 300px; height: 3000px; margin: 20px auto;background: lightgrey">
+    <input type="text" id="myInput">
+  </div>
+  <ul>
+    <li>click me</li>
+    <li>click me</li>
+    <li>click me</li>
+    <li>click me</li>
+  </ul>
+
+  <p id="help">Helpful notes will appear here</p>
+  <p>E-mail: <input type="text" id="email" name="email"></p>
+  <p>Name: <input type="text" id="name" name="name"></p>
+  <p>Age: <input type="text" id="age" name="age"></p>
+
+
+  <button id="btn" onclick="myClick()" >阿牛</button>
+
+  <script>
+    const el = document.getElementById("bg");
+
+    function sayhi() {
+      var scrollY = document.documentElement.scrollTop || document.body.scrollTop
+      console.log("===", scrollY)
+    }
+
+    const hhh = throttle(sayhi, 500, true);
+    window.addEventListener('scroll', hhh);
+
+    function myClick() {
+      hhh.cancel();
+      console.log("onclick")
+    }
+
+    const ipt = document.getElementById("myInput")
+    ipt.addEventListener('input', debounce(inputCahnge, 500, false))
+    function inputCahnge(e) {
+      console.log("=========", e.target.value);
+    }
+
+    // var add = (function () {
+    //   var counter = 0;
+    //   return function () { return counter += 1; }
+    // })()
+    // console.log(add())
+    // console.log(add())
+    // console.log(add())
+    // console.log(add())
+
+    // var elements = document.getElementsByTagName('li');
+    // var length = elements.length;
+    // for (var i = 0; i < length; i++) {
+    //   var a = i;
+    //   elements[i].onclick = function () {
+    //     alert(a);
+    //   }
+    // }
+
+    // const Counter = (function () {
+    //   let privateCounter = 0;
+    //   return {
+    //     increment: function () {
+    //       privateCounter += 1;
+    //     },
+    //     decrement: function () {
+    //       privateCounter -= 1;
+    //     },
+    //     value: () => privateCounter,
+    //   }
+    // })()
+
+    // console.log(Counter.value())
+    // Counter.increment()
+    // Counter.increment()
+    // console.log(Counter.value())
+    // Counter.decrement()
+    // console.log(Counter.value())
+
+    // function showHelp(help) {
+    //   document.getElementById('help').innerHTML = help;
+    // }
+
+    // function setupHelp() {
+    //   var helpText = [
+    //     { 'id': 'email', 'help': 'Your e-mail address' },
+    //     { 'id': 'name', 'help': 'Your full name' },
+    //     { 'id': 'age', 'help': 'Your age (you must be over 16)' }
+    //   ];
+
+    //   for (var i = 0; i < helpText.length; i++) {
+    //     var item = helpText[i];
+    //     document.getElementById(item.id).onfocus = function () {
+    //       showHelp(item.help);
+    //     }
+    //   }
+    // }
+
+    // setupHelp(); 
+  </script>
+</body>
+
+</html>
