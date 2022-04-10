@@ -20,7 +20,8 @@
         </div>
     </div>
 
-    <div class="button" id="switchId">切换表盘</div>
+    <!-- <div class="button" id="switchId">切换表盘</div> -->
+    <h2 class="timer" id="timer"></h2>
 
     <script>
         // const deg = 6;
@@ -45,6 +46,7 @@
         const sc = document.querySelector('#sc')
         const sbtn = document.querySelector('#switchId')
         const clock = document.querySelector('#clock')
+        const timer = document.querySelector('#timer')
         
 
         // sbtn.addEventListener('click', () => {
@@ -71,7 +73,18 @@
             hr.style.transform = `rotateZ(${(hh)+(mm/12)}deg)`
             mn.style.transform = `rotateZ(${mm}deg)`
             sc.style.transform = `rotateZ(${ss}deg)`
+
+            let h = day.getHours()
+            let m = day.getMinutes()
+            let s = day.getSeconds()
+            let am = h > 12 ? 'PM' : 'AM'
+
+            timer.innerHTML = `${handleZero(h)} : ${handleZero(m)} : ${handleZero(s)}&nbsp${am}`
         })
+
+        function handleZero(time) {
+            return time < 10 ? '0'+time : time
+        }
 
         function cusTimeInterval(cb) {
             cb()

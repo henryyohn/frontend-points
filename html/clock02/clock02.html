@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>clock demo 2</title>
+</head>
+<body>
+    <div class="loader">
+        <div class="circle" style="--clr: #04fc43;"></div>
+        <div class="circle circle2" style="--clr: #fee800;"></div>
+        <div class="circle circle3" style="--clr: #ff00be;"></div>
+    </div>
+
+    <script>
+        // const deg = 6
+        // const hr = document.querySelector('#hr')
+        // const mn = document.querySelector('#mn')
+        // const sc = document.querySelector('#sc')
+        // const sbtn = document.querySelector('#switchId')
+        // const clock = document.querySelector('#clock')
+
+        // cusTimeInterval(() => {
+ 
+        // })
+
+        function cusTimeInterval(cb) {
+            cb()
+            setTimeout(() => {
+                cusTimeInterval(cb)
+            }, 1000)
+        }
+    </script>
+</body>
+</html>
