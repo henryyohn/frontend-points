@@ -10,9 +10,9 @@
 <body>
     <div class="container">
         <div class="clock">
-            <div class="circle" style="--crl: #04fc43"><i></i></div>
-            <div class="circle circle2" style="--crl: #fee800"><i></i></div>
-            <div class="circle circle3" style="--crl: #ff2972"><i></i></div>
+            <div id="sc" class="circle" style="--crl: #04fc43"><i></i></div>
+            <div id="mn" class="circle circle2" style="--crl: #fee800"><i></i></div>
+            <div id="hr" class="circle circle3" style="--crl: #ff2972"><i></i></div>
 
             <span style="--i: 1"><b>1</b></span>
             <span style="--i: 2"><b>2</b></span>
@@ -27,6 +27,50 @@
             <span style="--i: 11"><b>11</b></span>
             <span style="--i: 12"><b>12</b></span>
         </div>
+        <!-- digital clock -->
+        <div id="time">
+            <div id="hour" style="--crl: #ff2972">00</div>
+            <div id="minutes" style="--crl: #fee800">00</div>
+            <div id="seconds" style="--crl: #04fc43">00</div>
+            <div id="ampm">AM</div>
+        </div>
     </div>
+
+    <script>
+        const hr = document.querySelector('#hr')
+        const mn = document.querySelector('#mn')
+        const sc = document.querySelector('#sc')
+
+        const hour = document.querySelector('#hour')
+        const minutes = document.querySelector('#minutes')
+        const seconds = document.querySelector('#seconds')
+        const ampm = document.querySelector('#ampm')
+
+        setInterval(() => {
+            const day = new Date()
+            const h = day.getHours()
+            const m = day.getMinutes()
+            const s = day.getSeconds()
+            const hh = h * 30
+            const mm = m * 6
+            const ss = s * 6
+            const am = h >= 12 ? 'pm' : 'am'
+
+            hour.innerHTML = setZero(h)
+            minutes.innerHTML = setZero(m)
+            seconds.innerHTML = setZero(s)
+            ampm.innerHTML = am
+
+            hr.style.transform = `rotateZ(${(hh)+(mm/12)}deg)`
+            mn.style.transform = `rotateZ(${mm}deg)`
+            sc.style.transform = `rotateZ(${ss}deg)`
+        }, 1000)
+
+        function setZero(time) {
+            return time < 10 ? '0'+time : time
+        }
+
+
+    </script>
 </body>
 </html>
