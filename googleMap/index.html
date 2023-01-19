@@ -1,0 +1,445 @@
+<html>
+
+<head>
+  <title>Simple Map</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+  <!-- playground-hide -->
+  <script>
+    const process = { env: {} };
+    process.env.GOOGLE_MAPS_API_KEY =
+      "AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg";
+  </script>
+  <!-- playground-hide-end -->
+
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+  <script type="module" src="./index.js"></script>
+</head>
+
+<body>
+  <style>
+    #map {
+      height: 500px;
+      border-radius: 10px;
+    }
+
+    :root {
+      --building-color: #FF9800;
+      --house-color: #0288D1;
+      --shop-color: #7B1FA2;
+      --warehouse-color: #558B2F;
+    }
+
+    .property {
+      align-items: center;
+      background-color: #FFFFFF;
+      border-radius: 5px;
+      color: #263238;
+      display: flex;
+      font-size: 14px;
+      gap: 15px;
+      /*min-height: 0px;*/
+      justify-content: center;
+      padding: 4px;
+      transition: all 0.3s ease-out;
+      /*width: 30px;*/
+    }
+
+    .property::after {
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 9px solid #FFFFFF;
+      content: "";
+      height: 0;
+      left: 50%;
+      position: absolute;
+      top: 95%;
+      transform: translate(-50%, 0);
+      transition: all 0.3s ease-out;
+      width: 0;
+      z-index: 1;
+    }
+
+    .property .details {
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .property .address {
+      color: #9E9E9E;
+      font-size: 10px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+    }
+
+    .property .features {
+      align-items: flex-end;
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    .property .features>div {
+      align-items: center;
+      background: #F5F5F5;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      display: flex;
+      font-size: 10px;
+      gap: 5px;
+      padding: 5px;
+    }
+
+    /*
+     * Property styles in highlighted state.
+     */
+    .property.highlight {
+      background-color: #FFFFFF;
+      border-radius: 8px;
+      box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.2);
+      height: 80px;
+      padding: 8px 15px;
+      width: auto;
+    }
+
+    .property.highlight::after {
+      border-top: 9px solid #FFFFFF;
+    }
+
+    .property.highlight .details {
+      display: flex;
+    }
+
+    .property.highlight .icon svg {
+      width: 50px;
+      height: 50px;
+    }
+
+    .property .bed {
+      color: #FFA000;
+    }
+
+    .property .bath {
+      color: #03A9F4;
+    }
+
+    .property .size {
+      color: #388E3C;
+    }
+
+    .price-tag {
+      background-color: #000000;
+      border-radius: 8px;
+      color: #FFFFFF;
+      font-size: 14px;
+      padding: 10px 15px;
+      position: relative;
+    }
+
+    .price-tag::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      transform: translate(-50%, 0);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid #000000;
+    }
+
+    [class$=api-load-alpha-banner] {
+      display: none;
+    }
+  </style>
+  <div id="map"></div>
+
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+  <!--<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIbJk3zCWgIMgxhVhMjttIztitDEqXwNQ&v=beta&libraries=marker&callback=initMap&v=weekly" defer></script>-->
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIbJk3zCWgIMgxhVhMjttIztitDEqXwNQ&v=beta&libraries=marker&callback=initMap&language=en-us"
+    defer></script>
+
+  <script>
+    function initMap2() {
+      const center = {
+        lat: 37.43238031167444,
+        lng: -122.16795397128632,
+      };
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 11,
+        center,
+        mapId: "4504f8b37365c3d0",
+      });
+
+      for (const property of properties) {
+        const advancedMarkerView = new google.maps.marker.AdvancedMarkerView({
+          map,
+          content: buildContent(property),
+          position: property.position,
+          title: property.description,
+        });
+        const element = advancedMarkerView.element;
+
+        ["focus", "pointerenter"].forEach((event) => {
+          element.addEventListener(event, () => {
+            highlight(advancedMarkerView, property);
+          });
+        });
+        ["blur", "pointerleave"].forEach((event) => {
+          element.addEventListener(event, () => {
+            unhighlight(advancedMarkerView, property);
+          });
+        });
+        advancedMarkerView.addListener("click", (event) => {
+          unhighlight(advancedMarkerView, property);
+        });
+      }
+    }
+
+    function highlight(markerView, property) {
+      markerView.content.classList.add("highlight");
+      markerView.element.style.zIndex = 1;
+    }
+
+    function unhighlight(markerView, property) {
+      markerView.content.classList.remove("highlight");
+      markerView.element.style.zIndex = "";
+    }
+
+    function buildContent(property) {
+      const content = document.createElement("div");
+
+      content.classList.add("property");
+      content.innerHTML = `
+    <div class="details">
+        <div class="price">${property.i + 1}</div>
+        <div>${property.date}</div>
+        <div class="address">${property.address}</div>
+        <div class="features">
+        <div>
+            <a target="_blank" href="${property.linkUrl}">${property.linkText}</a>
+        </div>
+        </div>
+    </div>
+    `;
+      return content;
+    }
+
+    function initMap() {
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 7,
+        center: { lat: 52.242150, lng: 8.927723 },
+        mapId: "4504f8b37365c3d0",
+      });
+      // Set LatLng and title text for the markers. The first marker (Boynton Pass)52.242150874980396, 8.92772319934132
+      // receives the initial focus when tab is pressed. Use arrow keys to
+      // move between markers; press tab again to cycle through the map controls.
+      const tourStops = [
+        {
+          position: { lat: 52.517950, lng: 13.325020 },
+          title: "VR Berlin (VRBLN)",
+          location: "MEDIADESIGN HOCHSCHULE Franklinstraße 28-29 10587 Berlin Germany",
+          linkText: "Click to Signup",
+          linkUrl: "https://www.signupgenius.com/go/10c094fa9ab22aaf8c52-pimax1",
+          address: "MEDIADESIGN HOCHSCHULE Franklinstraße 28-29 10587 Berlin Germany",
+          date: "November 19 - 20 (Saturday-Sunday)"
+        },
+        {
+          position: { lat: 51.516880, lng: 7.465150 },
+          title: "MRTV Headquarter",
+          location: "Brückstraße 52 44135 Dortmund Germany",
+          linkText: "Click to Signup",
+          linkUrl: "https://www.signupgenius.com/go/10c094fabab23a2fcc52-pimax1",
+          address: "Brückstraße 52 44135 Dortmund Germany",
+          date: "November 23 - 24 (Wednesday-Thursday)"
+        },
+        {
+          position: { lat: 52.012300, lng: 4.716370 },
+          title: "VRSPACE Virtual Reality Center",
+          location: "Klein Amerika 20 2806 CA Gouda Netherlands",
+          linkText: "Click to Signup",
+          linkUrl: "https://www.signupgenius.com/go/10c094fa9ab22aaf8c52-pimax3",
+          address: "Klein Amerika 20 2806 CA Gouda Netherlands",
+          date: "November 26 - 27 (Saturday-Sunday)"
+        },
+        {
+          position: { lat: 51.922020, lng: 4.472620 },
+          title: "Immersive Tech Week (VR Days Exhibition)",
+          location: "De Doelen Schouwburgplein 50 3012 CL Rotterdam Netherlands",
+          linkText: "Click get more information about the VR Days exhibition",
+          linkUrl: "https://vrdays.co/",
+          address: "De Doelen Schouwburgplein 50 3012 CL Rotterdam Netherlands",
+          date: "November 30 - December 2 (Wednesday-Friday)"
+        }
+      ];
+      // Create an info window to share between markers.
+      const infoWindow = new google.maps.InfoWindow();
+
+      // Create the markers.
+      tourStops.forEach(({ position, title, linkText, linkUrl, location, address, date }, i) => {
+        // const pinView = new google.maps.marker.PinView({
+        //   glyph: `pimax${i + 1}`,
+        // });
+        const priceTag = document.createElement('div');
+        priceTag.className = 'price-tag';
+        priceTag.textContent = `(Pi)-${i + 1}`;
+
+        const marker = new google.maps.marker.AdvancedMarkerView({
+          position,
+          map,
+          title: `${i + 1}. ${title}`,
+          content: priceTag,
+        });
+
+        // Add a click listener for each marker, and set up the info window.
+        marker.addListener("click", ({ domEvent, latLng }) => {
+          const { target } = domEvent;
+
+          infoWindow.close();
+          infoWindow.setContent(buildContent({ i, position, title, location, linkText, linkUrl, address, date }));
+          infoWindow.open(marker.map, marker);
+        });
+      });
+    }
+
+    const properties = [
+      {
+        address: "215 Emily St, MountainView, CA",
+        description: "Single family house with modern design",
+        price: "$ 3,889,000",
+        type: "home",
+        bed: 5,
+        bath: 4.5,
+        size: 300,
+        position: {
+          lat: 37.50024109655184,
+          lng: -122.28528451834352,
+        },
+      },
+      {
+        address: "108 Squirrel Ln &#128063;, Menlo Park, CA",
+        description: "Townhouse with friendly neighbors",
+        price: "$ 3,050,000",
+        type: "building",
+        bed: 4,
+        bath: 3,
+        size: 200,
+        position: {
+          lat: 37.44440882321596,
+          lng: -122.2160620727,
+        },
+      },
+      //];
+      {
+        address: "100 Chris St, Portola Valley, CA",
+        description: "Spacious warehouse great for small business",
+        price: "$ 3,125,000",
+        type: "warehouse",
+        bed: 4,
+        bath: 4,
+        size: 800,
+        position: {
+          lat: 37.39561833718522,
+          lng: -122.21855116258479,
+        },
+      },
+      {
+        address: "98 Aleh Ave, Palo Alto, CA",
+        description: "A lovely store on busy road",
+        price: "$ 4,225,000",
+        type: "store-alt",
+        bed: 2,
+        bath: 1,
+        size: 210,
+        position: {
+          lat: 37.423928529779644,
+          lng: -122.1087629822001,
+        },
+      },
+      {
+        address: "2117 Su St, MountainView, CA",
+        description: "Single family house near golf club",
+        price: "$ 1,700,000",
+        type: "home",
+        bed: 4,
+        bath: 3,
+        size: 200,
+        position: {
+          lat: 37.40578635332598,
+          lng: -122.15043378466069,
+        },
+      },
+      {
+        address: "197 Alicia Dr, Santa Clara, CA",
+        description: "Multifloor large warehouse",
+        price: "$ 5,000,000",
+        type: "warehouse",
+        bed: 5,
+        bath: 4,
+        size: 700,
+        position: {
+          lat: 37.36399747905774,
+          lng: -122.10465384268522,
+        },
+      },
+      {
+        address: "700 Jose Ave, Sunnyvale, CA",
+        description: "3 storey townhouse with 2 car garage",
+        price: "$ 3,850,000",
+        type: "building",
+        bed: 4,
+        bath: 4,
+        size: 600,
+        position: {
+          lat: 37.38343706184458,
+          lng: -122.02340436985183,
+        },
+      },
+      {
+        address: "868 Will Ct, Cupertino, CA",
+        description: "Single family house in great school zone",
+        price: "$ 2,500,000",
+        type: "home",
+        bed: 3,
+        bath: 2,
+        size: 100,
+        position: {
+          lat: 37.34576403052,
+          lng: -122.04455090047453,
+        },
+      },
+      {
+        address: "655 Haylee St, Santa Clara, CA",
+        description: "2 storey store with large storage room",
+        price: "$ 2,500,000",
+        type: "store-alt",
+        bed: 3,
+        bath: 2,
+        size: 450,
+        position: {
+          lat: 37.362863347890716,
+          lng: -121.97802139023555,
+        },
+      },
+      {
+        address: "2019 Natasha Dr, San Jose, CA",
+        description: "Single family house",
+        price: "$ 2,325,000",
+        type: "home",
+        bed: 4,
+        bath: 3.5,
+        size: 500,
+        position: {
+          lat: 37.41391636421949,
+          lng: -121.94592071575907,
+        },
+      },
+    ];
+
+    window.initMap = initMap;
+  </script>
+</body>
+
+</html>
